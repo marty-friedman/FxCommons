@@ -2,6 +2,7 @@ package com.egrasoft.fxcommons.controller;
 
 import com.egrasoft.fxcommons.service.FileManagerService;
 import com.egrasoft.fxcommons.throwable.DataProcessingException;
+import com.egrasoft.fxcommons.util.LockableProperty;
 import com.egrasoft.fxcommons.util.MessageHelper;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -21,7 +22,7 @@ import static com.egrasoft.fxcommons.util.ControllerUtils.*;
 
 public abstract class FileWorkFrameController<DATA> {
     private Property<File> currentFileProperty = new SimpleObjectProperty<>();
-    private BooleanProperty hasUnsavedChangesProperty = new SimpleBooleanProperty(false);
+    private LockableProperty<Boolean> hasUnsavedChangesProperty = new LockableProperty<>(false);
     private BooleanProperty hasFileProperty = new SimpleBooleanProperty(false);
     private MessageHelper messageHelper;
 
@@ -64,7 +65,9 @@ public abstract class FileWorkFrameController<DATA> {
         currentFileProperty.setValue(null);
         markChanged(false);
         markHasFile(false);
+        hasUnsavedChangesProperty.setLocked(true);
         onFileClosed();
+        hasUnsavedChangesProperty.setLocked(false);
     }
 
     protected void newFile() {
@@ -73,7 +76,9 @@ public abstract class FileWorkFrameController<DATA> {
         currentFileProperty.setValue(null);
         markChanged(true);
         markHasFile(true);
+        hasUnsavedChangesProperty.setLocked(true);
         onFileNew();
+        hasUnsavedChangesProperty.setLocked(false);
     }
 
     protected File getCurrentFile() {
@@ -113,7 +118,9 @@ public abstract class FileWorkFrameController<DATA> {
             getFileManagerService().save(getCurrentData(), file);
             currentFileProperty.setValue(file);
             markChanged(false);
+            hasUnsavedChangesProperty.setLocked(true);
             onFileSaved();
+            hasUnsavedChangesProperty.setLocked(false);
             return true;
         } catch (IOException exc) {
             createMessageDialog(Alert.AlertType.ERROR,
@@ -130,7 +137,9 @@ public abstract class FileWorkFrameController<DATA> {
             currentFileProperty.setValue(file);
             markChanged(false);
             markHasFile(true);
+            hasUnsavedChangesProperty.setLocked(true);
             onFileOpened(data);
+            hasUnsavedChangesProperty.setLocked(false);
         } catch (IOException exc) {
             createMessageDialog(Alert.AlertType.ERROR,
                     messageHelper.getOpenFileErrorDialogTitle(),
