@@ -1,5 +1,13 @@
 # FxCommons library
 
+## Version v0.1.2: New dialog, safe performer, prepare ListView
+Changelog:
+```
+- ControllerUtils - now can prepare ListView, perform operations safely and create text input prompt dialogs
+- ErrorMap - Map<Class<? extends Exception>, String> interface used by performSafe method
+- ExceptionProneSupplier<T> - contains function which should be performed by performSafe method
+```
+
 ## Version v0.1.1: Implemented LockableProperty
 Changelog:
 ```

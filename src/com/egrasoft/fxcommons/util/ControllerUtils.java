@@ -1,13 +1,12 @@
 package com.egrasoft.fxcommons.util;
 
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
 
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -19,6 +18,15 @@ public final class ControllerUtils {
         alert.setContentText(text);
         alert.setHeaderText(null);
         return alert;
+    }
+
+    public static TextInputDialog createTextInputDialog(String title, String text, String defaultValue) {
+        defaultValue = defaultValue != null ? defaultValue : "";
+        TextInputDialog dialog = new TextInputDialog(defaultValue);
+        dialog.setTitle(title);
+        dialog.setContentText(text);
+        dialog.setHeaderText(null);
+        return dialog;
     }
 
     public static FileChooser createFileChooser(String title) {
@@ -44,13 +52,47 @@ public final class ControllerUtils {
                                                  Consumer<TableColumn.CellEditEvent> editHandler,
                                                  StringConverter<T> stringConverter) {
         column.setCellValueFactory(cellData -> new SimpleObjectProperty<>(getter.apply(cellData.getValue())));
-        column.setCellFactory(TextFieldTableCell.forTableColumn(stringConverter));
+        if (stringConverter != null)
+            column.setCellFactory(TextFieldTableCell.forTableColumn(stringConverter));
         column.setOnEditCommit(event -> {
             if (setter != null)
                 setter.accept(event.getRowValue(), event.getNewValue());
             if (editHandler != null)
                 editHandler.accept(event);
         });
+    }
+
+    public static <S> void prepareListView(ListView<S> listView, Function<? super S, String> mapper) {
+        listView.setCellFactory(lv -> new ListCell<S>() {
+            @Override
+            protected void updateItem(S item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(mapper.apply(item));
+                }
+            }
+        });
+    }
+
+    public static <T> T performSafe(ExceptionProneSupplier<T> function, ErrorMap errorMap, String errorTitle) {
+        try {
+            return function.run();
+        } catch (Exception e) {
+            Class<? extends Exception> excClass = e.getClass();
+            e.printStackTrace();
+            if (errorMap.containsKey(excClass))
+                createMessageDialog(Alert.AlertType.ERROR, errorTitle, errorMap.get(excClass)).showAndWait();
+            else
+                errorMap.entrySet().stream()
+                        .filter(entry -> entry.getKey().isAssignableFrom(excClass))
+                        .findFirst()
+                        .map(Map.Entry::getValue)
+                        .ifPresent(message ->
+                                createMessageDialog(Alert.AlertType.ERROR, errorTitle, message).showAndWait());
+            return null;
+        }
     }
 
     public static <S> void markPresentRowsWithBorders(TableView<S> tableView, Integer borderWidth, String borderColor) {
@@ -65,4 +107,5 @@ public final class ControllerUtils {
             }
         });
     }
+
 }
