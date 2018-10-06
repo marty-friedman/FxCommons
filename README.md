@@ -1,5 +1,12 @@
 # FxCommons library
 
+## Version v0.1.1: Implemented LockableProperty
+Changelog:
+```
+- LockableProperty - can be locked so that set / setValue method calls are ignored
+- FileWorkFrameController - improvements connected with adding a new Property, user now cannot make unsavedChangesProperty 'dirty' in listener methods
+```
+
 ## Version v0.1: First stable version of the FxCommons library
 Changelog:
 ```
@@ -7,11 +14,4 @@ Changelog:
 - MessageHelper - helper interface which allows this library's classes to obtain messages which have to be shown to the user
 - FileManagerService - generic interface which programmer should implement in order to have a possibility to use FileWorkFrameController, contains read/write methods supposed to manage file operations
 - ControllerUtils - support class for javafx controllers, currently contains methods to create a message dialog, file chooser, ask-for-saving dialog and to add borders for table view present rows
-```
-
-## Version v0.1.1: Implemented LockableProperty
-Changelog:
-```
-- LockableProperty - can be locked so that set / setValue method calls are ignored
-- FileWorkFrameController - improvements connected with adding a new Property, user now cannot make unsavedChangesProperty 'dirty' in listener methods
 ```
