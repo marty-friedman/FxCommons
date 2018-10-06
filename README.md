@@ -1,5 +1,11 @@
 # FxCommons library
 
+## Version v0.1.3: Overloaded methods for dialogs creation
+Changelog:
+```
+- Added overloaded methods for different dialogs creation, allowing you to provide custom ok/cancel buttons' text
+```
+
 ## Version v0.1.2: New dialog, safe performer, prepare ListView
 Changelog:
 ```

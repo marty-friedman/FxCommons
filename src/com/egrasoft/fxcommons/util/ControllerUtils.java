@@ -6,6 +6,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -20,12 +21,42 @@ public final class ControllerUtils {
         return alert;
     }
 
+    public static Alert createMessageDialog(Alert.AlertType type, String title, String text, String okText) {
+        Alert alert = createMessageDialog(type, title, text);
+        ((Button) alert.getDialogPane().lookupButton(ButtonType.OK)).setText(okText);
+        return alert;
+    }
+
     public static TextInputDialog createTextInputDialog(String title, String text, String defaultValue) {
         defaultValue = defaultValue != null ? defaultValue : "";
         TextInputDialog dialog = new TextInputDialog(defaultValue);
         dialog.setTitle(title);
         dialog.setContentText(text);
         dialog.setHeaderText(null);
+        return dialog;
+    }
+
+    public static TextInputDialog createTextInputDialog(String title, String text, String defaultValue, String okText,
+                                                        String cancelText) {
+        TextInputDialog dialog = createTextInputDialog(title, text, defaultValue);
+        ((Button) dialog.getDialogPane().lookupButton(ButtonType.OK)).setText(okText);
+        ((Button) dialog.getDialogPane().lookupButton(ButtonType.CANCEL)).setText(cancelText);
+        return dialog;
+    }
+
+    public static <T> ChoiceDialog<T> createChoiceDialog(List<T> choices, T defaultChoice, String title, String text) {
+        ChoiceDialog<T> dialog = new ChoiceDialog<>(defaultChoice, choices);
+        dialog.setTitle(title);
+        dialog.setContentText(text);
+        dialog.setHeaderText(null);
+        return dialog;
+    }
+
+    public static <T> ChoiceDialog<T> createChoiceDialog(List<T> choices, T defaultChoice, String title, String text,
+                                                         String okText, String cancelText) {
+        ChoiceDialog<T> dialog = createChoiceDialog(choices, defaultChoice, title, text);
+        ((Button) dialog.getDialogPane().lookupButton(ButtonType.OK)).setText(okText);
+        ((Button) dialog.getDialogPane().lookupButton(ButtonType.CANCEL)).setText(cancelText);
         return dialog;
     }
 
@@ -36,10 +67,7 @@ public final class ControllerUtils {
     }
 
     public static Alert createAskForSavingDialog(String title, String text, String optionYes, String optionNo, String optionCancel) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(title);
-        alert.setContentText(text);
-        alert.setHeaderText(null);
+        Alert alert = createMessageDialog(Alert.AlertType.CONFIRMATION, title, text);
         alert.getButtonTypes().setAll(new ButtonType(optionYes, ButtonBar.ButtonData.YES),
                 new ButtonType(optionNo, ButtonBar.ButtonData.NO),
                 new ButtonType(optionCancel, ButtonBar.ButtonData.CANCEL_CLOSE));
